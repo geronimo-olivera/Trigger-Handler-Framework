@@ -1,22 +1,24 @@
-# Salesforce DX Project: Next Steps
+# Trigger Handler Framework
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+A metadata-driven Apex trigger handler framework for Salesforce. Trigger logic is dispatched to handler classes based on `Trigger_Handler__mdt` custom metadata records, with a recursion guard that prevents a handler from running twice on the same records within a transaction.
 
-## How Do You Plan to Deploy Your Changes?
+## Contents
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+- [`force-app/main/default/classes/TriggerHandler.cls`](force-app/main/default/classes/TriggerHandler.cls) — abstract base class with a hook per trigger event.
+- [`force-app/main/default/classes/TriggerHandlerInterface.cls`](force-app/main/default/classes/TriggerHandlerInterface.cls) — contract implemented by every handler.
+- [`force-app/main/default/classes/TriggerHandlerManager.cls`](force-app/main/default/classes/TriggerHandlerManager.cls) — looks up active handlers for an object/event and dispatches to them.
+- [`force-app/main/default/objects/Trigger_Handler__mdt/`](force-app/main/default/objects/Trigger_Handler__mdt/) — custom metadata type that configures which handler classes run for which object/event.
 
-## Configure Your Salesforce DX Project
+## Deploy to an org
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+You need [VS Code with the Salesforce Extension Pack](https://developer.salesforce.com/tools/vscode/) and an authenticated org.
+
+1. Clone this repo and open it in VS Code.
+2. Authenticate to your target org (`SFDX: Authorize an Org`, or `sf org login web` from the CLI).
+3. Right-click [`manifest/package.xml`](manifest/package.xml) and choose **SFDX: Deploy Source in Manifest to Org**.
+
+That deploys everything the framework needs — Apex classes and the `Trigger_Handler__mdt` custom metadata type with its fields and layout — in one step.
 
 ## Documentation
 
 Project-specific documentation lives in [`docs/`](docs/README.md).
-
-## Read All About It
-
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
