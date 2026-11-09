@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Skips every handler run by TriggerHandlerManager for the users who have it. Meant for data migration or integration users, never for regular users.</description>
+    <isLicensed>false</isLicensed>
+    <label>Bypass All Trigger Handlers</label>
+</CustomPermission>

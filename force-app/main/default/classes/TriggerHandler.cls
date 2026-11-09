@@ -2,20 +2,25 @@
  * File Name   :	TriggerHandler.cls
  * Description :	Base abstract class for all trigger handlers, providing default hook methods for each trigger event.
  *                  Subclasses can override only the methods they need, keeping trigger logic clean and reusable.
+ *                  The records come from TriggerHandlerManager's current context, so the same handler runs the same
+ *                  way from a real trigger and from a test that builds a TriggerHandlerContext by hand.
  **/
 public abstract inherited sharing class TriggerHandler implements TriggerHandlerInterface {
     /**
      * Executes the appropriate hook method based on the current trigger operation.
      */
     public void execute() {
-        switch on Trigger.operationType {
-            when BEFORE_INSERT  { beforeInsert((List<SObject>)Trigger.new); }
-            when BEFORE_UPDATE  { beforeUpdate((List<SObject>)Trigger.new, (Map<Id, SObject>)Trigger.oldMap); }
-            when BEFORE_DELETE  { beforeDelete((List<SObject>)Trigger.old); }
-            when AFTER_INSERT   { afterInsert((List<SObject>)Trigger.new); }
-            when AFTER_UPDATE   { afterUpdate((List<SObject>)Trigger.new, (Map<Id, SObject>)Trigger.oldMap); }
-            when AFTER_DELETE   { afterDelete((List<SObject>)Trigger.old); }
-            when AFTER_UNDELETE { afterUndelete((List<SObject>)Trigger.new); }
+        TriggerHandlerContext context = TriggerHandlerManager.getCurrentContext();
+        if (context == null) { context = TriggerHandlerContext.fromTrigger(); }
+        if (context.operationType == null) { return; }
+        switch on context.operationType {
+            when BEFORE_INSERT  { beforeInsert(context.newList); }
+            when BEFORE_UPDATE  { beforeUpdate(context.newList, context.oldMap); }
+            when BEFORE_DELETE  { beforeDelete(context.oldList); }
+            when AFTER_INSERT   { afterInsert(context.newList); }
+            when AFTER_UPDATE   { afterUpdate(context.newList, context.oldMap); }
+            when AFTER_DELETE   { afterDelete(context.oldList); }
+            when AFTER_UNDELETE { afterUndelete(context.newList); }
         }
     }
 

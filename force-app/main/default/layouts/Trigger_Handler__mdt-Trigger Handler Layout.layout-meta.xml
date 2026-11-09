@@ -51,6 +51,10 @@
                 <behavior>Edit</behavior>
                 <field>Is_Active__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Bypass_Permission__c</field>
+            </layoutItems>
         </layoutColumns>
         <style>TwoColumnsLeftToRight</style>
     </layoutSections>

@@ -1,53 +1,47 @@
 /**
  * File Name   :	MockTriggerHandler.cls
- * Description :	Test-only TriggerHandler implementation used by TriggerHandlerManagerTest to
- *                  verify dispatch, context matching, and recursion guarding through real DML.
+ * Description :	Test-only handler used by TriggerHandlerManagerTest. Records every hook it runs in a shared log,
+ *                  and can re-enter the manager or throw on demand to exercise the recursion guard.
  **/
-@isTest
+@IsTest
 public class MockTriggerHandler extends TriggerHandler {
-    public static Integer beforeInsertCount = 0;
-    public static Integer afterInsertCount = 0;
-    public static Integer beforeUpdateCount = 0;
-    public static Integer afterUpdateCount = 0;
-    public static Integer beforeDeleteCount = 0;
-    public static Integer afterDeleteCount = 0;
-    public static Integer afterUndeleteCount = 0;
 
-    public static void resetCounts() {
-        beforeInsertCount = 0;
-        afterInsertCount = 0;
-        beforeUpdateCount = 0;
-        afterUpdateCount = 0;
-        beforeDeleteCount = 0;
-        afterDeleteCount = 0;
-        afterUndeleteCount = 0;
+    /** Every hook call from both mock handlers, as "Handler:EVENT:recordCount", in call order. */
+    public static List<String> log = new List<String>();
+
+    /** When set, afterUpdate calls the manager again with this context, like a handler updating its own records. */
+    public static TriggerHandlerContext reenterWith;
+
+    /** When true, the next hook call throws, then the flag resets. */
+    public static Boolean throwOnNextCall = false;
+
+    public static void reset() {
+        log = new List<String>();
+        reenterWith = null;
+        throwOnNextCall = false;
     }
 
-    protected override void beforeInsert(List<SObject> newList) {
-        beforeInsertCount++;
+    public static void record(String handlerName, String event, List<SObject> records) {
+        if (throwOnNextCall) {
+            throwOnNextCall = false;
+            throw new MockHandlerException('Simulated failure in ' + handlerName);
+        }
+        log.add(handlerName + ':' + event + ':' + (records == null ? 0 : records.size()));
     }
 
-    protected override void afterInsert(List<SObject> newList) {
-        afterInsertCount++;
-    }
-
+    protected override void beforeInsert(List<SObject> newList) { record('Mock', 'BEFORE_INSERT', newList); }
     protected override void beforeUpdate(List<SObject> newList, Map<Id, SObject> oldMap) {
-        beforeUpdateCount++;
+        record('Mock', 'BEFORE_UPDATE', newList);
+        Assert.areEqual(newList.size(), oldMap.size(), 'the old map comes with every update');
     }
-
+    protected override void beforeDelete(List<SObject> oldList) { record('Mock', 'BEFORE_DELETE', oldList); }
+    protected override void afterInsert(List<SObject> newList) { record('Mock', 'AFTER_INSERT', newList); }
     protected override void afterUpdate(List<SObject> newList, Map<Id, SObject> oldMap) {
-        afterUpdateCount++;
+        record('Mock', 'AFTER_UPDATE', newList);
+        if (reenterWith != null) { TriggerHandlerManager.handle('Account', reenterWith); }
     }
+    protected override void afterDelete(List<SObject> oldList) { record('Mock', 'AFTER_DELETE', oldList); }
+    protected override void afterUndelete(List<SObject> newList) { record('Mock', 'AFTER_UNDELETE', newList); }
 
-    protected override void beforeDelete(List<SObject> oldList) {
-        beforeDeleteCount++;
-    }
-
-    protected override void afterDelete(List<SObject> oldList) {
-        afterDeleteCount++;
-    }
-
-    protected override void afterUndelete(List<SObject> newList) {
-        afterUndeleteCount++;
-    }
+    public class MockHandlerException extends Exception {}
 }
