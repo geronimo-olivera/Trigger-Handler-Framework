@@ -61,3 +61,7 @@ That deploys everything the framework needs — Apex classes and the `Trigger_Ha
 ## Documentation
 
 - [`docs/USAGE.md`](docs/USAGE.md) — how to add a handler, what to avoid, how the recursion guard works.
+
+## License
+
+Released under the [MIT License](LICENSE).
