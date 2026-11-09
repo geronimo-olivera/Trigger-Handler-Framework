@@ -5,7 +5,7 @@
       "default": true
     }
   ],
-  "name": "Salesforce-Utils",
+  "name": "Trigger-Handler-Framework",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "62.0"
