@@ -105,7 +105,7 @@ A bypass skips your handlers, not the rest of the org's automation: Flows, valid
 
 ## Permissions
 
-Nothing to assign for the framework itself. Triggers run in system context, and `TriggerHandlerManager` reads `Trigger_Handler__mdt` with `getAll()`, which works for every user and doesn't use a SOQL query. Reading a custom metadata type with SOQL, by contrast, fails for users without access to it in orgs that restrict custom metadata, which would break every save those users make.
+Nothing to assign for the framework itself. Triggers run in system context, and `TriggerHandlerManager` reads `Trigger_Handler__mdt` with `getAll()`, which works in every context and doesn't use a SOQL query. A SOQL query on a custom metadata type works in a real trigger, but fails when the code runs in user mode as a user without access to the type, for example a test with `System.runAs` as a standard user.
 
 What your handlers need depends on what they do. A handler declared `with sharing`, or one that queries `WITH USER_MODE`, only sees what the running user can see. Decide that per handler, and test it with `System.runAs` as a standard user.
 

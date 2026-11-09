@@ -225,8 +225,8 @@ public inherited sharing class TriggerHandlerManager {
 
     /**
      * Reads the configuration with Trigger_Handler__mdt.getAll() instead of SOQL: it doesn't count against the SOQL
-     * limit, and it works for every user. A SOQL query on the type fails for users without access to it (common in
-     * orgs that restrict custom metadata access), which would break every save those users make.
+     * limit, and it works in every context. A SOQL query on the type fails when the code runs in user mode as a user
+     * without access to it, such as a test with System.runAs as a standard user.
      * @param objectName The SObject API name, or null for every object. Filtering by object happens in getHandlers.
      * @return the active Trigger_Handler__mdt records, ordered by Order__c.
      */

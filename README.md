@@ -12,7 +12,7 @@ Salesforce orgs tend to accumulate triggers with logic written directly inside t
 - **Handler classes** contain the actual logic, one class per concern, each overriding only the events it cares about.
 - **Configuration over code** — which handlers run, for which object, for which events (before/after insert/update/delete/undelete), and in what order, lives in `Trigger_Handler__mdt` records. Turning a handler on/off or reordering it doesn't require touching Apex.
 - **Safe by default** — a recursion guard skips a handler only while it's already running on the same records. A later save in the same transaction, such as a record-triggered Flow updating the record, runs it again, so it always sees the latest data.
-- **Works for every user** — the configuration is read with `Trigger_Handler__mdt.getAll()`, which needs no permission and no SOQL query, so saves never fail because a user can't read the metadata.
+- **Works for every user** — the configuration is read with `Trigger_Handler__mdt.getAll()`, which needs no permission and no SOQL query, so it works the same in a real trigger and in a test running as a standard user.
 - **Bypasses when you need them** — skip a handler from code, skip one for users with a custom permission, or skip all of them for a data migration user.
 
 See [`docs/USAGE.md`](docs/USAGE.md) for how to add a new handler and what to avoid.
