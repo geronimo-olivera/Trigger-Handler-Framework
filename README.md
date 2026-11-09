@@ -2,6 +2,8 @@
 
 A metadata-driven Apex trigger handler framework for Salesforce. Trigger logic is dispatched to handler classes based on `Trigger_Handler__mdt` custom metadata records, with a recursion guard that prevents a handler from running twice on the same records within a transaction.
 
+[![Deploy to Salesforce](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png)](https://githubsfdeploy.herokuapp.com?owner=geronimo-olivera&repo=Trigger-Handler-Framework&ref=master)
+
 ## Purpose
 
 Salesforce orgs tend to accumulate triggers with logic written directly inside them, duplicated across objects, with no consistent way to enable/disable/reorder behavior without a deploy. The goal of this framework is:
@@ -49,6 +51,14 @@ Each record configures one handler class for one object.
 The dispatch logic itself (recursion guard, class resolution, hook execution) can only be exercised through DML against a real trigger — see [`docs/USAGE.md`](docs/USAGE.md) for how to wire one up in your own org if you want to extend coverage there.
 
 ## Deploy to an org
+
+### One click
+
+[![Deploy to Salesforce](https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png)](https://githubsfdeploy.herokuapp.com?owner=geronimo-olivera&repo=Trigger-Handler-Framework&ref=master)
+
+Click the button, choose production or sandbox, and log in to the org. The deploy runs through [GitHub Salesforce Deploy](https://github.com/afawcett/githubsfdeploy), a free open-source tool by Andrew Fawcett. Try it in a sandbox first: a production deploy also runs your org's Apex tests.
+
+### From VS Code
 
 You need [VS Code with the Salesforce Extension Pack](https://developer.salesforce.com/tools/vscode/) and an authenticated org.
 
